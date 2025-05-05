@@ -1,0 +1,143 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Secure Download</title>
+  <style>
+    body {
+      margin: 0;
+      background: linear-gradient(to right, #000000, #001f33);
+      color: #00ff99;
+      font-family: 'Courier New', Courier, monospace;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      overflow: hidden;
+    }#processing-text {
+  font-size: 2rem;
+  opacity: 1;
+  animation: fadeInProcessing 1s ease-in-out forwards;
+}
+
+@keyframes fadeInProcessing {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+#main-content {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+}
+
+#matrix-text {
+  font-size: 2.5rem;
+  min-height: 60px;
+  opacity: 0;
+  animation: fadeInText 2s forwards;
+}
+
+@keyframes fadeInText {
+  to {
+    opacity: 1;
+  }
+}
+
+.download-button {
+  margin-top: 40px;
+  padding: 15px 30px;
+  font-size: 1.2rem;
+  color: #00ff99;
+  border: 2px solid #00ff99;
+  background-color: transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.download-button:hover {
+  transform: scale(1.3);
+  background-color: rgba(0, 255, 153, 0.1);
+}
+
+.download-button:active {
+  background-color: rgba(0, 255, 153, 0.3);
+}
+
+  </style>
+</head>
+<body>
+  <div id="processing-text">Processing</div>  <div id="main-content">
+    <h1 id="matrix-text"></h1>
+    <button class="download-button" id="downloadBtn">Download</button>
+  </div>  <script>
+    // Animácia "Processing..."
+    const processingElement = document.getElementById("processing-text");
+    let dots = 0;
+    const dotInterval = setInterval(() => {
+      dots = (dots + 1) % 4;
+      processingElement.textContent = "Processing" + ".".repeat(dots);
+    }, 500);
+
+    // Po 2 sekundách skryť processing a zobraziť obsah
+    setTimeout(() => {
+      clearInterval(dotInterval);
+      processingElement.style.display = 'none';
+      document.getElementById('main-content').style.display = 'flex';
+
+      // Spusti matrix efekt
+      setTimeout(() => {
+        matrixStep();
+      }, 500);
+    }, 2000);
+
+    // Matrix efekt
+    const matrixTarget = "Welcome to my website";
+    const matrixElement = document.getElementById("matrix-text");
+    const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*";
+    const totalLength = matrixTarget.length;
+    const interval = 60; // spomalené z 40ms na 60ms
+
+    let displayText = new Array(totalLength).fill("");
+    let progress = 0;
+
+    function matrixStep() {
+      for (let i = 0; i < totalLength; i++) {
+        if (i < progress) {
+          displayText[i] = matrixTarget[i];
+        } else {
+          displayText[i] = characters[Math.floor(Math.random() * characters.length)];
+        }
+      }
+      matrixElement.textContent = displayText.join("");
+      if (progress < totalLength) {
+        progress++;
+        setTimeout(matrixStep, interval);
+      }
+    }
+
+    // Tlačidlo sťahovania (ľavý klik)
+    const downloadBtn = document.getElementById('downloadBtn');
+    downloadBtn.addEventListener('click', () => {
+      const a = document.createElement('a');
+      a.href = 'myFile.exe';
+      a.download = 'myFile.exe';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    });
+
+    // Pravý klik tiež spustí sťahovanie
+    downloadBtn.addEventListener('contextmenu', (e) => {
+      e.preventDefault();
+      const a = document.createElement('a');
+      a.href = 'myFile.exe';
+      a.download = 'myFile.exe';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    });
+  </script></body>
+</html>
